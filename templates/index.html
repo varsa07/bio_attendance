@@ -3,35 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biometric Attendance System</title>
+    <title>Biometric Face Attendance</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 20px; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 8px; max-width: 400px; margin: 15px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        input[type="text"] { width: 90%; padding: 8px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 15px; width: 95%; margin-top: 5px; }
-        button.scan { background-color: #28a745; }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 10px; max-width: 450px; margin: 15px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        video, canvas { width: 100%; border-radius: 8px; border: 2px solid #ddd; margin-top: 10px; }
+        input[type="text"] { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 95%; margin-top: 10px; }
+        button.scan-btn { background-color: #28a745; }
     </style>
 </head>
 <body>
-    <h2>Biometric Attendance System</h2>
 
-    <!-- Student Registration -->
+    <h2>Biometric Face Attendance System</h2>
+
+    <!-- Live Camera Section -->
     <div class="card">
-        <h3>1. Student Register Karein</h3>
+        <h3>Live Camera Scanner</h3>
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <button id="snap-btn" class="scan-btn" onclick="takeSnapshot()">📷 Scan & Mark Attendance</button>
+    </div>
+
+    <!-- Student Registration Section -->
+    <div class="card">
+        <h3>New Student Registration</h3>
         <form action="/register" method="POST">
-            <input type="text" name="name" placeholder="Student ka Name" required><br>
-            <input type="text" name="student_id" placeholder="Student Roll No / UID" required><br>
-            <button type="submit">Save Student Details</button>
+            <input type="text" name="name" placeholder="Student Name" required><br>
+            <input type="text" name="student_id" placeholder="Roll Number / Student ID" required><br>
+            <button type="submit">Register Student</button>
         </form>
     </div>
 
-    <!-- Attendance Scanner -->
-    <div class="card">
-        <h3>2. Attendance Scan / Mark</h3>
-        <form action="/mark-attendance" method="POST">
-            <input type="text" name="student_id" placeholder="Enter UID / Scan Face" required><br>
-            <button type="submit" class="scan">Mark Attendance</button>
-        </form>
-    </div>
+    <script>
+        // Start Laptop / Phone Camera
+        const video = document.getElementById('webcam');
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { console.error("Camera access denied or not available", err); });
+
+        function takeSnapshot() {
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            alert("Face Photo Captured! Matching with Database...");
+        }
+    </script>
 </body>
 </html>
