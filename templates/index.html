@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biometric Face Attendance System</title>
+    <title>Smart Biometric Attendance System</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f5; margin: 0; padding: 20px; text-align: center; }
         .card { background: white; padding: 25px; border-radius: 12px; max-width: 480px; margin: 20px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
@@ -19,21 +19,21 @@
 
     <h2>Smart Biometric Face Attendance System</h2>
 
-    <!-- 1. Live Camera Scan & Face Matching -->
+    <!-- 1. Live Camera Scan & Match -->
     <div class="card">
-        <h3>1. Daily Face Scan & Match</h3>
+        <h3>1. Daily Face Scan Attendance</h3>
         <video id="webcam" autoplay playsinline></video>
         <canvas id="canvas" style="display:none;"></canvas>
-        <input type="text" id="scan_uid" placeholder="Enter Your UID / Roll No to Match Face" required><br>
-        <button class="scan-btn" onclick="captureAndVerify()">📷 Match Face & Mark Attendance</button>
+        <input type="text" id="scan_uid" placeholder="Enter Your Roll No / UID" required><br>
+        <button class="scan-btn" onclick="verifyAndMark()">📷 Scan Face & Mark Attendance</button>
     </div>
 
-    <!-- 2. Student Registration with Photo Upload -->
+    <!-- 2. Student Registration -->
     <div class="card">
         <h3>2. New Student Registration</h3>
         <form action="/register" method="POST" enctype="multipart/form-data">
             <input type="text" name="name" placeholder="Student Full Name" required><br>
-            <input type="text" name="student_id" placeholder="Roll Number / Student UID" required><br>
+            <input type="text" name="student_id" placeholder="Roll Number / UID" required><br>
             <label style="font-size:13px; color:#666; display:block; text-align:left; padding-left:15px;">Upload Reference Face Photo:</label>
             <input type="file" name="photo" accept="image/*" required><br>
             <button type="submit">Register Student & Save Photo</button>
@@ -49,12 +49,12 @@
         </form>
     </div>
 
-    <!-- 4. Teacher Secure Login -->
+    <!-- 4. Teacher Secure Section -->
     <div class="card">
         <h3>4. Teacher Section</h3>
         <form action="/teacher-dashboard" method="POST">
             <input type="password" name="password" placeholder="Enter Teacher Password" required><br>
-            <button type="submit" class="teacher-btn">📊 Teacher Dashboard</button>
+            <button type="submit" class="teacher-btn">📊 Open Teacher Dashboard</button>
         </form>
     </div>
 
@@ -62,29 +62,28 @@
         const video = document.getElementById('webcam');
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
-            .catch(err => { console.error("Camera access error:", err); });
+            .catch(err => { console.error("Camera error:", err); });
 
-        function captureAndVerify() {
+        function verifyAndMark() {
             const uid = document.getElementById('scan_uid').value;
             if(!uid) {
                 alert("Please enter your UID first!");
                 return;
             }
-            
+
             const canvas = document.getElementById('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            // Send captured snapshot data to backend for matching verification
             const imageData = canvas.toDataURL('image/png');
-            
-            // Post request simulation to backend
+
+            // Send image data and UID to backend for verification
             fetch('/mark-attendance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'student_id=' + encodeURIComponent(uid)
+                body: 'student_id=' + encodeURIComponent(uid) + '&image=' + encodeURIComponent(imageData)
             }).then(response => response.text()).then(html => {
                 document.open();
                 document.write(html);
