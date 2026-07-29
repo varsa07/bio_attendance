@@ -3,44 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biometric Attendance System</title>
+    <title>Biometric Face Attendance System</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 10px; max-width: 450px; margin: 15px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f5; margin: 0; padding: 20px; text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 12px; max-width: 480px; margin: 20px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
         video { width: 100%; border-radius: 8px; border: 2px solid #ddd; margin-top: 10px; }
-        input[type="text"], input[type="password"] { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { background-color: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 95%; margin-top: 10px; }
+        input[type="text"], input[type="password"], input[type="file"] { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 15px; width: 95%; margin-top: 10px; font-weight: bold; }
         button.scan-btn { background-color: #28a745; }
+        button.check-btn { background-color: #17a2b8; }
         button.teacher-btn { background-color: #6c757d; }
+        .label-text { font-size: 13px; color: #666; display: block; margin-top: 5px; text-align: left; padding-left: 20px; }
     </style>
 </head>
 <body>
 
-    <h2>Biometric Attendance System</h2>
+    <h2>Smart Biometric Face Attendance System</h2>
 
-    <!-- Live Camera Scanner -->
+    <!-- 1. Live Camera Scan & Face Verification -->
     <div class="card">
-        <h3>Live Attendance Scan</h3>
+        <h3>1. Daily Face Scan Attendance</h3>
         <video id="webcam" autoplay playsinline></video>
-        <button class="scan-btn" onclick="alert('Face Scan Complete!')">📷 Scan Attendance</button>
+        <button class="scan-btn" onclick="captureAndVerify()">📷 Scan Face & Verify Student</button>
     </div>
 
-    <!-- Student Registration -->
+    <!-- 2. Student Registration with Stored Photo -->
     <div class="card">
-        <h3>Student Registration</h3>
-        <form action="/register" method="POST">
-            <input type="text" name="name" placeholder="Student Name" required><br>
-            <input type="text" name="student_id" placeholder="Roll Number / UID" required><br>
-            <button type="submit">Register Student</button>
+        <h3>2. New Student Registration</h3>
+        <form action="/register" method="POST" enctype="multipart/form-data">
+            <input type="text" name="name" placeholder="Student Full Name" required><br>
+            <input type="text" name="student_id" placeholder="Roll Number / Student UID" required><br>
+            <span class="label-text">Upload Clear Face Photo (Reference Image):</span>
+            <input type="file" name="photo" accept="image/*" required><br>
+            <button type="submit">Register Student & Save Photo</button>
         </form>
     </div>
 
-    <!-- Teacher Login (Password Protected) -->
+    <!-- 3. Student Self-Check Portal -->
     <div class="card">
-        <h3>Teacher Login</h3>
+        <h3>3. Student Portal (Check Attendance)</h3>
+        <form action="/check-student-attendance" method="POST">
+            <input type="text" name="student_id" placeholder="Enter Your Roll No / UID" required><br>
+            <button type="submit" class="check-btn">🔍 View My Attendance</button>
+        </form>
+    </div>
+
+    <!-- 4. Teacher Secure Login -->
+    <div class="card">
+        <h3>4. Teacher / Admin Section</h3>
         <form action="/teacher-dashboard" method="POST">
-            <input type="password" name="password" placeholder="Enter Teacher Password" required><br>
-            <button type="submit" class="teacher-btn">📊 View Attendance Dashboard</button>
+            <input type="password" name="password" placeholder="Enter Admin/Teacher Password" required><br>
+            <button type="submit" class="teacher-btn">📊 Open Teacher Dashboard</button>
         </form>
     </div>
 
@@ -48,7 +61,11 @@
         const video = document.getElementById('webcam');
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
-            .catch(err => { console.error(err); });
+            .catch(err => { console.error("Camera access error:", err); });
+
+        function captureAndVerify() {
+            alert("Matching Live Face with Registered Photos in Database...");
+        }
     </script>
 </body>
 </html>
