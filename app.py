@@ -1,28 +1,54 @@
-from flask import Flask, render_template, request, redirect, url_for
-from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Attendance System</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 10px; max-width: 450px; margin: 15px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        video { width: 100%; border-radius: 8px; border: 2px solid #ddd; margin-top: 10px; }
+        input[type="text"], input[type="password"] { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 95%; margin-top: 10px; }
+        button.scan-btn { background-color: #28a745; }
+        button.teacher-btn { background-color: #6c757d; }
+    </style>
+</head>
+<body>
 
-app = Flask(__name__)
+    <h2>Biometric Attendance System</h2>
 
-# Temporary Databases
-students_db = {}
-attendance_records = []
+    <!-- Live Camera Scanner -->
+    <div class="card">
+        <h3>Live Attendance Scan</h3>
+        <video id="webcam" autoplay playsinline></video>
+        <button class="scan-btn" onclick="alert('Face Scan Complete!')">📷 Scan Attendance</button>
+    </div>
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+    <!-- Student Registration -->
+    <div class="card">
+        <h3>Student Registration</h3>
+        <form action="/register" method="POST">
+            <input type="text" name="name" placeholder="Student Name" required><br>
+            <input type="text" name="student_id" placeholder="Roll Number / UID" required><br>
+            <button type="submit">Register Student</button>
+        </form>
+    </div>
 
-@app.route('/register', methods=['POST'])
-def register():
-    name = request.form.get('name')
-    student_id = request.form.get('student_id')
-    if student_id and name:
-        students_db[student_id] = name
-        return f"<h3>Success! {name} (ID: {student_id}) Registered.</h3><br><a href='/'>Go Back</a>"
-    return redirect(url_for('home'))
+    <!-- Teacher Login (Password Protected) -->
+    <div class="card">
+        <h3>Teacher Login</h3>
+        <form action="/teacher-dashboard" method="POST">
+            <input type="password" name="password" placeholder="Enter Teacher Password" required><br>
+            <button type="submit" class="teacher-btn">📊 View Attendance Dashboard</button>
+        </form>
+    </div>
 
-@app.route('/teacher-dashboard')
-def teacher_dashboard():
-    return render_template('dashboard.html', students=students_db, attendance=attendance_records)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    <script>
+        const video = document.getElementById('webcam');
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { console.error(err); });
+    </script>
+</body>
+</html>
