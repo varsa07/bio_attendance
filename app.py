@@ -4,9 +4,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Temporary Databases
-# Structure: { student_id: {'name': name, 'photo': filename} }
 students_db = {}
-# Structure: [ {'id': student_id, 'name': name, 'time': timestamp} ]
 attendance_records = []
 
 TEACHER_PASSWORD = "admin123"
@@ -15,7 +13,6 @@ TEACHER_PASSWORD = "admin123"
 def home():
     return render_template('index.html')
 
-# 1. Student Registration Endpoint (Saves Info + Photo reference)
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -34,13 +31,38 @@ def register():
                 <h2 style="color: green;">Registration Successful!</h2>
                 <p><b>Student Name:</b> {name}</p>
                 <p><b>Student ID / UID:</b> {student_id}</p>
-                <p><b>Reference Image:</b> Uploaded & Linked</p>
                 <br><a href="/">← Return to Main Page</a>
             </div>
             """
     return redirect(url_for('home'))
 
-# 2. Student Self Attendance Checker Endpoint
+# New Route to handle Attendance Marking after scan simulation
+@app.route('/mark-attendance', methods=['POST'])
+def mark_attendance():
+    student_id = request.form.get('student_id')
+    if student_id in students_db:
+        student_name = students_db[student_id]['name']
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Add record to list
+        attendance_records.append({
+            'id': student_id,
+            'name': student_name,
+            'time': current_time
+        })
+        
+        return f"""
+        <div style="font-family: Arial; padding: 30px; text-align: center;">
+            <h2 style="color: #28a745;">Attendance Marked Successfully!</h2>
+            <p><b>Name:</b> {student_name}</p>
+            <p><b>UID:</b> {student_id}</p>
+            <p><b>Time:</b> {current_time}</p>
+            <br><a href="/">← Go Back to Home</a>
+        </div>
+        """
+    else:
+        return f"<h3>Error: Student ID '{student_id}' not found in database! Please register first.</h3><br><a href='/'>Go Back</a>"
+
 @app.route('/check-student-attendance', methods=['GET', 'POST'])
 def check_student_attendance():
     if request.method == 'POST':
@@ -48,7 +70,6 @@ def check_student_attendance():
         
         if student_id in students_db:
             student_info = students_db[student_id]
-            # Fetch all attendance logs for this student
             user_records = [rec for rec in attendance_records if rec['id'] == student_id]
             total_present = len(user_records)
             
@@ -71,7 +92,6 @@ def check_student_attendance():
             
     return redirect(url_for('home'))
 
-# 3. Secure Teacher Dashboard Route
 @app.route('/teacher-dashboard', methods=['GET', 'POST'])
 def teacher_dashboard():
     if request.method == 'POST':
