@@ -24,7 +24,10 @@
     <div class="card">
         <h3>1. Daily Face Scan Attendance</h3>
         <video id="webcam" autoplay playsinline></video>
-        <button class="scan-btn" onclick="captureAndVerify()">📷 Scan Face & Verify Student</button>
+        <form action="/mark-attendance" method="POST">
+            <input type="text" name="student_id" placeholder="Enter Your UID / Roll No to Simulate Scan" required><br>
+            <button type="submit" class="scan-btn">📷 Scan Face & Mark Attendance</button>
+        </form>
     </div>
 
     <!-- 2. Student Registration with Stored Photo -->
@@ -62,10 +65,6 @@
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => { video.srcObject = stream; })
             .catch(err => { console.error("Camera access error:", err); });
-
-        function captureAndVerify() {
-            alert("Matching Live Face with Registered Photos in Database...");
-        }
     </script>
 </body>
 </html>
