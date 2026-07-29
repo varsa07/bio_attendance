@@ -19,18 +19,9 @@
 
     <h2>Smart Biometric Face Attendance System</h2>
 
-    <!-- 1. Live Camera Scan & Match -->
+    <!-- 1. New Student Registration (First Step) -->
     <div class="card">
-        <h3>1. Daily Face Scan Attendance</h3>
-        <video id="webcam" autoplay playsinline></video>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <input type="text" id="scan_uid" placeholder="Enter Your Roll No / UID" required><br>
-        <button class="scan-btn" onclick="verifyAndMark()">📷 Scan Face & Mark Attendance</button>
-    </div>
-
-    <!-- 2. Student Registration -->
-    <div class="card">
-        <h3>2. New Student Registration</h3>
+        <h3>1. New Student Registration</h3>
         <form action="/register" method="POST" enctype="multipart/form-data">
             <input type="text" name="name" placeholder="Student Full Name" required><br>
             <input type="text" name="student_id" placeholder="Roll Number / UID" required><br>
@@ -38,6 +29,15 @@
             <input type="file" name="photo" accept="image/*" required><br>
             <button type="submit">Register Student & Save Photo</button>
         </form>
+    </div>
+
+    <!-- 2. Daily Face Scan & Match (Second Step) -->
+    <div class="card">
+        <h3>2. Daily Face Scan Attendance</h3>
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <input type="text" id="scan_uid" placeholder="Enter Your Roll No / UID" required><br>
+        <button class="scan-btn" onclick="verifyAndMark()">📷 Scan Face & Mark Attendance</button>
     </div>
 
     <!-- 3. Student Self-Check Portal -->
@@ -79,7 +79,6 @@
             
             const imageData = canvas.toDataURL('image/png');
 
-            // Send image data and UID to backend for verification
             fetch('/mark-attendance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
