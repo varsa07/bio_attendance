@@ -3,7 +3,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Temporary database
+# Temporary Databases
 students_db = {}
 attendance_records = []
 
@@ -20,17 +20,9 @@ def register():
         return f"<h3>Success! {name} (ID: {student_id}) Registered.</h3><br><a href='/'>Go Back</a>"
     return redirect(url_for('home'))
 
-@app.route('/mark-attendance', methods=['POST'])
-def mark_attendance():
-    student_id = request.form.get('student_id')
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    if student_id in students_db:
-        student_name = students_db[student_id]
-        attendance_records.append({'id': student_id, 'name': student_name, 'time': now})
-        return f"<h3>Welcome {student_name}! Attendance Marked at {now}</h3><br><a href='/'>Go Back</a>"
-    else:
-        return f"<h3>Error: Student ID not found! Register first.</h3><br><a href='/'>Go Back</a>"
+@app.route('/teacher-dashboard')
+def teacher_dashboard():
+    return render_template('dashboard.html', students=students_db, attendance=attendance_records)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
